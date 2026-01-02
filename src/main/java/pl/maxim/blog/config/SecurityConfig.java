@@ -41,7 +41,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth
+        http.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/",
                                 "/css/**", "/js/**", "/images/**",
@@ -51,6 +52,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(Customizer.withDefaults())
+                .httpBasic(Customizer.withDefaults())
                 .logout(Customizer.withDefaults());
 
         return http.build();

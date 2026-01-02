@@ -21,7 +21,6 @@ public class Message {
     @JoinColumn(name = "recipient_id", nullable = false)
     private AppUser recipient;
 
-    @Lob
     @Column(nullable = false, columnDefinition = "text")
     private String content;
 

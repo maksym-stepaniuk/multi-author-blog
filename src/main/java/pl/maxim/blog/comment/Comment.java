@@ -22,7 +22,6 @@ public class Comment {
     @JoinColumn(name = "author_id", nullable = false)
     private AppUser author;
 
-    @Lob
     @Column(nullable = false, columnDefinition = "text")
     private String content;
 

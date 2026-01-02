@@ -9,7 +9,7 @@ public class PostSpecifications {
         String like = "%" + text.toLowerCase() + "%";
         return (root, query, cb) -> cb.or(
                 cb.like(cb.lower(root.get("title")), like),
-                cb.like(cb.lower(root.get("content")), like)
+                cb.like(cb.lower(root.get("content").as(String.class)), like)
         );
     }
 
