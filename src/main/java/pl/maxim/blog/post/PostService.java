@@ -12,6 +12,7 @@ import pl.maxim.blog.post.dto.PostUpdateRequest;
 import pl.maxim.blog.post.dto.UserSummary;
 import pl.maxim.blog.user.AppUser;
 import pl.maxim.blog.user.AppUserRepository;
+import pl.maxim.blog.security.CurrentUserService;
 
 import java.util.Comparator;
 import java.util.HashSet;
@@ -24,10 +25,12 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final AppUserRepository userRepository;
+    private final CurrentUserService currentUserService;
 
-    public PostService(PostRepository postRepository, AppUserRepository userRepository) {
+    public PostService(PostRepository postRepository, AppUserRepository userRepository, CurrentUserService currentUserService) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.currentUserService = currentUserService;
     }
 
     @Transactional(readOnly = true)
@@ -44,6 +47,10 @@ public class PostService {
 
     @Transactional
     public PostResponse create(PostCreateRequest req) {
+        var current = currentUserService.requireUser();
+        if (!currentUserService.isAdmin() && !req.authorIds().contains(current.getId())) {
+            throw new org.springframework.security.access.AccessDeniedException("You must be an author of your post");
+        }
         Post post = new Post();
         post.setTitle(req.title());
         post.setContent(req.content());
@@ -55,6 +62,13 @@ public class PostService {
     public PostResponse update(Long id, PostUpdateRequest req) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found: " + id));
+        var current = currentUserService.requireUser();
+        if (!currentUserService.isAdmin() && post.getAuthors().stream().noneMatch(a -> a.getId().equals(current.getId()))) {
+            throw new org.springframework.security.access.AccessDeniedException("Forbidden");
+        }
+        if (!currentUserService.isAdmin() && !req.authorIds().contains(current.getId())) {
+            throw new org.springframework.security.access.AccessDeniedException("You must remain an author of your post");
+        }
         post.setTitle(req.title());
         post.setContent(req.content());
         post.setAuthors(fetchAuthors(req.authorIds()));
@@ -63,10 +77,15 @@ public class PostService {
 
     @Transactional
     public void delete(Long id) {
-        if (!postRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Post not found: " + id);
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found: " + id));
+
+        var current = currentUserService.requireUser();
+        if (!currentUserService.isAdmin() && post.getAuthors().stream().noneMatch(a -> a.getId().equals(current.getId()))) {
+            throw new org.springframework.security.access.AccessDeniedException("Forbidden");
         }
-        postRepository.deleteById(id);
+
+        postRepository.delete(post);
     }
 
     @Transactional(readOnly = true)
