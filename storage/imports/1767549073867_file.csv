@@ -1,0 +1,4 @@
+username,email,password,role,enabled
+alice,alice@example.com,alice,USER,true
+bob,bob@example.com,bob,USER,true
+new_user,new@example.com,,USER,true

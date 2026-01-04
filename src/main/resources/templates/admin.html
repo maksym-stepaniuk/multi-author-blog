@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin</title>
+</head>
+<body>
+  <h1>Admin panel</h1>
+
+  <h2>Import users (CSV)</h2>
+  <form method="post" action="/admin/import/users" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".csv" required>
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+    <button type="submit">Upload</button>
+  </form>
+
+  <div th:if="${usersResult != null}">
+    <p th:text="'Created: ' + ${usersResult.created()} + ', Updated: ' + ${usersResult.updated()} + ', Failed: ' + ${usersResult.failed()}"></p>
+    <ul th:if="${usersResult.errors() != null}">
+      <li th:each="e : ${usersResult.errors()}" th:text="${e}"></li>
+    </ul>
+  </div>
+
+  <h2>Import posts (CSV)</h2>
+  <form method="post" action="/admin/import/posts" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".csv" required>
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+    <button type="submit">Upload</button>
+  </form>
+
+  <div th:if="${postsResult != null}">
+    <p th:text="'Created: ' + ${postsResult.created()} + ', Updated: ' + ${postsResult.updated()} + ', Failed: ' + ${postsResult.failed()}"></p>
+    <ul th:if="${postsResult.errors() != null}">
+      <li th:each="e : ${postsResult.errors()}" th:text="${e}"></li>
+    </ul>
+  </div>
+
+  <h2>Export</h2>
+  <a href="/admin/export/posts">Download posts.csv</a>
+
+  <h2>Swagger</h2>
+  <a href="/swagger-ui.html">Open Swagger</a>
+</body>
+</html>

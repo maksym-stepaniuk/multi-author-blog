@@ -27,4 +27,10 @@ public class GlobalExceptionHandler {
         ApiError body = new ApiError(Instant.now(), 400, "Bad Request", msg, req.getRequestURI());
         return ResponseEntity.badRequest().body(body);
     }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleForbidden(org.springframework.security.access.AccessDeniedException ex, HttpServletRequest req) {
+        ApiError body = new ApiError(Instant.now(), 403, "Forbidden", ex.getMessage(), req.getRequestURI());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
 }
