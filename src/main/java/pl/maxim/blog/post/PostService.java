@@ -95,6 +95,15 @@ public class PostService {
         return postRepository.findAll(spec, pageable).map(this::toResponse);
     }
 
+    @Transactional(readOnly = true)
+    public Page<PostResponse> myPosts(Pageable pageable) {
+        var current = currentUserService.requireUser();
+        if (currentUserService.isAdmin()) {
+            return postRepository.findAll(pageable).map(this::toResponse);
+        }
+        return postRepository.findDistinctByAuthorsId(current.getId(), pageable).map(this::toResponse);
+    }
+
     private Set<AppUser> fetchAuthors(List<Long> authorIds) {
         List<AppUser> users = userRepository.findAllById(authorIds);
         if (users.size() != new HashSet<>(authorIds).size()) {
