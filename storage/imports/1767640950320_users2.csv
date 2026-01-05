@@ -1,0 +1,2 @@
+username,email,password,role,enabled
+u1,u1_new@ex.com,,ADMIN,true
