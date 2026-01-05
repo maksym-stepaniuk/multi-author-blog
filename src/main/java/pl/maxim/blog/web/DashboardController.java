@@ -55,8 +55,8 @@ public class DashboardController {
     @GetMapping("/posts/new")
     public String newPost(Model model) {
         PostForm form = new PostForm();
-        var current = currentUserService.requireUser();
-        form.getAuthorIds().add(current.getId());
+        Long meId = currentUserService.requireUserId();
+        form.getAuthorIds().add(meId);
 
         model.addAttribute("postForm", form);
         model.addAttribute("users", allUsersForSelect());
@@ -76,8 +76,8 @@ public class DashboardController {
             return "post_form";
         }
 
-        var current = currentUserService.requireUser();
-        if (!currentUserService.isAdmin() && !form.getAuthorIds().contains(current.getId())) {
+        Long currentId = currentUserService.requireUserId();
+        if (!currentUserService.isAdmin() && !form.getAuthorIds().contains(currentId)) {
             throw new AccessDeniedException("You must be an author of your post");
         }
 

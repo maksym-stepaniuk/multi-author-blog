@@ -1,0 +1,3 @@
+username,email,password,role,enabled
+u1,u1@ex.com,pass,USER,true
+u2,u2@ex.com,,ADMIN,false

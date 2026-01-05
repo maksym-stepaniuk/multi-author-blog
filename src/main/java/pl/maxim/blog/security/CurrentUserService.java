@@ -30,4 +30,8 @@ public class CurrentUserService {
         if (auth == null) return false;
         return auth.getAuthorities().stream().anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
     }
+
+    public Long requireUserId() {
+        return requireUser().getId();
+    }
 }

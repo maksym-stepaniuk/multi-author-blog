@@ -102,15 +102,15 @@ public class MessagesController {
             @RequestParam(defaultValue = "20") int size,
             Model model
     ) {
-        var me = currentUserService.requireUser();
+        Long meId = currentUserService.requireUserId();
         Pageable pageable = PageRequest.of(page, size);
 
-        model.addAttribute("meId", me.getId());
+        model.addAttribute("meId", meId);
         model.addAttribute("otherUserId", userId);
         model.addAttribute("otherUser", userService.search(null, PageRequest.of(0, 200, Sort.by("username")))
                 .getContent().stream().filter(u -> u.id().equals(userId)).findFirst().orElse(null));
 
-        model.addAttribute("chat", conversationService.conversation(me.getId(), userId, pageable));
+        model.addAttribute("chat", conversationService.conversation(meId, userId, pageable));
         MessageForm form = new MessageForm();
         form.setRecipientId(userId);
         model.addAttribute("messageForm", form);
@@ -128,12 +128,12 @@ public class MessagesController {
             Model model
     ) {
         if (br.hasErrors()) {
-            var me = currentUserService.requireUser();
+            Long meId = currentUserService.requireUserId();
             Pageable pageable = PageRequest.of(page, size);
 
-            model.addAttribute("meId", me.getId());
+            model.addAttribute("meId", meId);
             model.addAttribute("otherUserId", userId);
-            model.addAttribute("chat", conversationService.conversation(me.getId(), userId, pageable));
+            model.addAttribute("chat", conversationService.conversation(meId, userId, pageable));
             return "conversation";
         }
 

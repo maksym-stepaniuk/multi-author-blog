@@ -65,8 +65,10 @@ public class AdminUserService {
 
         List<Post> posts = postRepository.findDistinctByAuthorsId(id);
         for (Post p : posts) {
-            p.getAuthors().removeIf(a -> a.getId().equals(id));
-            if (p.getAuthors().isEmpty()) {
+            var authors = new java.util.HashSet<>(p.getAuthors());
+            authors.removeIf(a -> a.getId().equals(id));
+            p.setAuthors(authors);
+            if (authors.isEmpty()) {
                 postRepository.delete(p);
             } else {
                 postRepository.save(p);
