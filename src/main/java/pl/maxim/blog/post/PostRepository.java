@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificationExecutor<Post> {
 
@@ -13,6 +14,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
     Double findAverageRating(@Param("postId") Long postId);
 
     Page<Post> findDistinctByAuthorsId(Long authorId, Pageable pageable);
+    List<Post> findDistinctByAuthorsId(Long authorId);
 
     @Query("select p from Post p join p.authors a where a.username = :username")
     Page<Post> findByAuthorUsername(@Param("username") String username, Pageable pageable);
