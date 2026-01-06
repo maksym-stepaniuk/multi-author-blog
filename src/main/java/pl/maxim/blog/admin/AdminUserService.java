@@ -14,9 +14,13 @@ import pl.maxim.blog.user.AppUserRepository;
 import pl.maxim.blog.user.dto.UserResponse;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class AdminUserService {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminUserService.class);
 
     private final AppUserRepository userRepository;
     private final PostRepository postRepository;
@@ -55,6 +59,7 @@ public class AdminUserService {
         }
 
         AppUser saved = userRepository.save(u);
+        log.info("Admin updated user {}", id);
         return new UserResponse(saved.getId(), saved.getUsername(), saved.getEmail(), saved.getRole(), saved.isEnabled());
     }
 
@@ -70,11 +75,14 @@ public class AdminUserService {
             p.setAuthors(authors);
             if (authors.isEmpty()) {
                 postRepository.delete(p);
+                log.info("Admin deleting post {} because last author {}", p.getId(), id);
             } else {
                 postRepository.save(p);
+                log.info("Admin removed author {} from post {}", id, p.getId());
             }
         }
 
         userRepository.delete(u);
+        log.info("Admin deleted user {}", id);
     }
 }

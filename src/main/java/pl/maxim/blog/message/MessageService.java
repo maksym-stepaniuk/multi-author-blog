@@ -11,9 +11,13 @@ import pl.maxim.blog.message.dto.SendMessageRequest;
 import pl.maxim.blog.post.dto.UserSummary;
 import pl.maxim.blog.security.CurrentUserService;
 import pl.maxim.blog.user.AppUserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class MessageService {
+
+    private static final Logger log = LoggerFactory.getLogger(MessageService.class);
 
     private final MessageRepository messageRepository;
     private final MessageJdbcDao messageJdbcDao;
@@ -39,6 +43,7 @@ public class MessageService {
         m.setContent(req.content());
 
         Message saved = messageRepository.save(m);
+        log.info("Message sent from {} to {}", sender.getId(), recipient.getId());
 
         return new MessageResponse(
                 saved.getId(),
@@ -91,5 +96,6 @@ public class MessageService {
         if (rows == 0) {
             throw new ResourceNotFoundException("Message not found: " + id);
         }
+        log.info("Message {} deleted by user {}", id, user.getId());
     }
 }

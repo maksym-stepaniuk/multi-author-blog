@@ -35,9 +35,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class AdminCsvService {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminCsvService.class);
 
     private final AppUserRepository userRepository;
     private final PostRepository postRepository;
@@ -58,6 +62,7 @@ public class AdminCsvService {
             try (InputStream in = file.getInputStream()) {
                 Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
             }
+            log.info("Saved import file to {}", target);
             return target;
         } catch (IOException e) {
             throw new IllegalStateException("Cannot save file", e);
@@ -67,6 +72,7 @@ public class AdminCsvService {
     @Transactional
     public ImportResult importUsers(MultipartFile file) {
         Path saved = saveToDisk(file);
+        log.info("Importing users from {}", saved.getFileName());
 
         int created = 0;
         int updated = 0;
@@ -126,6 +132,7 @@ public class AdminCsvService {
     @Transactional
     public ImportResult importPosts(MultipartFile file) {
         Path saved = saveToDisk(file);
+        log.info("Importing posts from {}", saved.getFileName());
 
         int created = 0;
         int updated = 0;

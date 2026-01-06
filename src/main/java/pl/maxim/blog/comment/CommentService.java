@@ -12,9 +12,13 @@ import pl.maxim.blog.post.Post;
 import pl.maxim.blog.post.PostRepository;
 import pl.maxim.blog.post.dto.UserSummary;
 import pl.maxim.blog.security.CurrentUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class CommentService {
+
+    private static final Logger log = LoggerFactory.getLogger(CommentService.class);
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
@@ -52,6 +56,7 @@ public class CommentService {
         c.setContent(req.content());
 
         Comment saved = commentRepository.save(c);
+        log.info("User {} added comment {} to post {}", user.getId(), saved.getId(), postId);
         return new CommentResponse(
                 saved.getId(),
                 postId,
@@ -78,5 +83,6 @@ public class CommentService {
         }
 
         commentRepository.delete(c);
+        log.info("Comment {} deleted by user {}", commentId, user.getId());
     }
 }

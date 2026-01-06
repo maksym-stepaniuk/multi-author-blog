@@ -19,9 +19,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class PostService {
+
+    private static final Logger log = LoggerFactory.getLogger(PostService.class);
 
     private final PostRepository postRepository;
     private final AppUserRepository userRepository;
@@ -51,6 +55,7 @@ public class PostService {
         if (!currentUserService.isAdmin() && !req.authorIds().contains(current.getId())) {
             throw new org.springframework.security.access.AccessDeniedException("You must be an author of your post");
         }
+        log.info("Creating post by user {}", current.getUsername());
         Post post = new Post();
         post.setTitle(req.title());
         post.setContent(req.content());
@@ -69,6 +74,7 @@ public class PostService {
         if (!currentUserService.isAdmin() && !req.authorIds().contains(current.getId())) {
             throw new org.springframework.security.access.AccessDeniedException("You must remain an author of your post");
         }
+        log.info("Updating post {} by user {}", id, current.getUsername());
         post.setTitle(req.title());
         post.setContent(req.content());
         post.setAuthors(fetchAuthors(req.authorIds()));
@@ -85,6 +91,7 @@ public class PostService {
             throw new org.springframework.security.access.AccessDeniedException("Forbidden");
         }
 
+        log.info("Deleting post {} by user {}", id, current.getUsername());
         postRepository.delete(post);
     }
 
